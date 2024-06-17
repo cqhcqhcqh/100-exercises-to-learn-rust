@@ -5,6 +5,23 @@
 // It should also have a method named `is_available` that returns a `true` if the quantity is
 // greater than 0, otherwise `false`.
 
+struct Order {
+    price: u32,
+    quantity: u32
+}
+
+impl Order {
+    fn is_available(self) -> bool {
+        return self.quantity > 0
+    }
+}
+
+impl Order {
+    fn class_name() -> &'static str {
+        return "<Order>"
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -25,5 +42,11 @@ mod tests {
             quantity: 0,
         };
         assert!(!order.is_available());
+    }
+
+    #[test]
+    fn test_order_static_method() {
+        let cls_name = Order::class_name();
+        assert_eq!(cls_name, "<Order>");
     }
 }

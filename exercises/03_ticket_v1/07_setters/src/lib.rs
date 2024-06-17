@@ -11,22 +11,9 @@ pub struct Ticket {
 
 impl Ticket {
     pub fn new(title: String, description: String, status: String) -> Ticket {
-        if title.is_empty() {
-            panic!("Title cannot be empty");
-        }
-        if title.len() > 50 {
-            panic!("Title cannot be longer than 50 bytes");
-        }
-        if description.is_empty() {
-            panic!("Description cannot be empty");
-        }
-        if description.len() > 500 {
-            panic!("Description cannot be longer than 500 bytes");
-        }
-        if status != "To-Do" && status != "In Progress" && status != "Done" {
-            panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
-        }
-
+        title_checker(&title);
+        description_checker(&description);
+        status_checker(&status);
         Ticket {
             title,
             description,
@@ -45,6 +32,46 @@ impl Ticket {
     pub fn status(&self) -> &String {
         &self.status
     }
+
+    pub fn set_title(self: &mut Ticket, title: String) {
+        title_checker(&title);
+        self.title = title;
+    }
+
+    pub fn set_description(self: &mut Ticket, description: String) {
+        description_checker(&description);
+        self.description = description;
+    }
+
+    pub fn set_status(self: &mut Ticket, status: String) {
+        status_checker(&status);
+        self.status = status;
+    }
+
+}
+fn title_checker(title: & String) {
+    if title.is_empty() {
+        panic!("Title cannot be empty");
+    }
+    if title.len() > 50 {
+        panic!("Title cannot be longer than 50 characters");
+    }
+}
+
+fn description_checker(description: & String) {
+    if description.is_empty() {
+        panic!("Description cannot be empty");
+    }
+    if description.len() > 500 {
+        panic!("Description cannot be longer than 500 characters");
+    }
+}
+
+fn status_checker(status: & String) {
+    if status != "To-Do" && status != "In Progress" && status != "Done" {
+        panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
+    }
+
 }
 
 #[cfg(test)]
