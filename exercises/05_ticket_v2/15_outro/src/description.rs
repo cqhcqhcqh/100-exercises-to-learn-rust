@@ -2,7 +2,44 @@
 //   enforcing that the description is not empty and is not longer than 500 bytes.
 //   Implement the traits required to make the tests pass too.
 
+use std::error;
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct TicketDescription(String);
+
+#[derive(Debug, thiserror::Error)]
+#[error("{invalid_description}")]
+pub struct DescriptionInvalidError {
+    invalid_description: String
+}
+
+impl TryFrom<String> for TicketDescription  {
+    type Error = DescriptionInvalidError;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        if value.is_empty() {
+            return Err(DescriptionInvalidError{invalid_description: String::from("The description cannot be empty")});
+        }
+        if value.len() > 500 {
+            return Err(DescriptionInvalidError{invalid_description: String::from("The description cannot be longer than 500 bytes")});
+        }
+
+        return Ok(TicketDescription(value));
+    }
+}
+
+impl TryFrom<&str> for TicketDescription  {
+    type Error = DescriptionInvalidError;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if value.is_empty() {
+            return Err(DescriptionInvalidError{invalid_description: String::from("The description cannot be empty")});
+        }
+        if value.len() > 500 {
+            return Err(DescriptionInvalidError{invalid_description: String::from("The description cannot be longer than 500 bytes")});
+        }
+
+        return Ok(TicketDescription(String::from(value)));
+    }
+}
 
 #[cfg(test)]
 mod tests {

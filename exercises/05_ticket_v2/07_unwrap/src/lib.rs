@@ -1,8 +1,42 @@
+use std::result;
+
 // TODO: `easy_ticket` should panic when the title is invalid.
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
+// 我的实现
+// fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
+//     // todo!()
+//     let a_title = title.clone();
+//     let a_description = description.clone();
+//     let a_status = status.clone();
+
+//     let result = Ticket::new(title, description, status);
+//     match result {
+//         Err(error) => {
+//             if error == "Description cannot be empty" || error == "Description cannot be longer than 500 bytes" {
+//                 return Ticket::new(a_title, "Description not provided".to_string(), a_status).unwrap()
+//             } else {
+//                 return Ticket::new(a_title, a_description, a_status).unwrap()
+//                 // return Ticket {title: a_title, description: a_description, status: a_status }
+//             }
+//         },
+//         Ok(ticket) => return ticket,
+//     }
+// }
+
+// https://github.com/mainmatter/100-exercises-to-learn-rust/blob/solutions/exercises/05_ticket_v2/07_unwrap/src/lib.rs 实现
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    // todo!()
+    match Ticket::new(title.clone(), description.clone(), status.clone()) {
+        Ok(ticket) => return ticket,
+        Err(error) => {
+            if error.contains("Description") {
+                return Ticket::new(title, "Description not provided".into(), status).unwrap()
+            } else {
+                return Ticket::new(title, description, status).unwrap()
+            }
+        },
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
