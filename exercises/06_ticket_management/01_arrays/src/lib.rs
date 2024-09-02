@@ -2,29 +2,63 @@
 
 pub struct WeekTemperatures {
     // TODO
+    temperatures: [Option<i32>; 7]
+}
+#[derive(Clone, Copy)]
+pub enum Weekday {
+    Monday = 0,
+    Tuesday = 1,
+    Wednesday = 2,
+    Thursday = 3,
+    Friday = 4,
+    Saturday = 5,
+    Sunday = 6,
 }
 
-pub enum Weekday {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday,
+impl Weekday {
+    fn value(&self) -> usize {
+        return *self as usize;
+    }
 }
 
 impl WeekTemperatures {
     pub fn new() -> Self {
-        todo!()
+        // todo!()
+        let temperates: [Option<i32>; 7] = [None; 7];
+        return WeekTemperatures {temperatures: temperates}
     }
 
     pub fn get_temperature(&self, day: Weekday) -> Option<i32> {
-        todo!()
+        // todo!()
+        // match day {
+        //     Weekday::Monday => return self.temperatures.get(0),
+        //     Weekday::Tuesday => return self.temperatures.get(1),
+        //     Weekday::Wednesday => return self.temperatures.get(2),
+        //     Weekday::Thursday => return self.temperatures.get(3),
+        //     Weekday::Friday => return self.temperatures.get(4),
+        //     Weekday::Saturday => return self.temperatures.get(5),
+        //     Weekday::Sunday => return self.temperatures.get(6),
+        // }
+        // let res = self.temperatures.get(day.value());
+        // match res {
+        //     Option::Some(v) => return Some(v?),
+        //     Option::None => return None
+        // }
+        self.temperatures[day.value()]
     }
 
     pub fn set_temperature(&mut self, day: Weekday, temperature: i32) {
-        todo!()
+        // todo!()
+        // match day {
+        //     Weekday::Monday => return self.temperatures[0] = temperature,
+        //     Weekday::Tuesday => return self.temperatures[1] = temperature,
+        //     Weekday::Wednesday => return self.temperature[2] = temperature,
+        //     Weekday::Thursday => return self.temperatures[3] = temperature,
+        //     Weekday::Friday => return self.temperatures[4] = temperature,
+        //     Weekday::Saturday => return self.temperatures[5] = temperature,
+        //     Weekday::Sunday => return self.temperatures[6] = temperature,
+        // }
+        self.temperatures[day.value()] = Some(temperature)
     }
 }
 

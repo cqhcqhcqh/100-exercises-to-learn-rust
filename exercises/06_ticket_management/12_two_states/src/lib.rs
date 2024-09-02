@@ -44,8 +44,28 @@ impl TicketStore {
         }
     }
 
-    pub fn add_ticket(&mut self, ticket: Ticket) {
+    // pub fn add_ticket(&mut self, ticket: Ticket) {
+    //     self.tickets.push(ticket);
+    // }
+    pub fn add_ticket(&mut self, ticket: TicketDraft) -> TicketId {
+        let _id: u64 = (self.tickets.len()+1) as u64;
+        let id = TicketId(_id);
+        let ticket = Ticket { 
+            id: id, 
+            title: ticket.title,
+            description: ticket.description, 
+            status: Status::ToDo };
         self.tickets.push(ticket);
+        return id;
+    }
+
+    pub fn get(&self, id: TicketId) -> Option<Ticket> {
+        let find = self.tickets.iter().filter(|&t| t.id == id).collect::<Vec<&Ticket>>();
+        if find.len() > 0 {
+            let ticket = find[0].clone();
+            return Some(ticket);
+        }
+        return None;
     }
 }
 

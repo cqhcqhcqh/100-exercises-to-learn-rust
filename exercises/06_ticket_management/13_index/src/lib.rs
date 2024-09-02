@@ -1,5 +1,7 @@
 // TODO: Implement `Index<&TicketId>` and `Index<TicketId>` for `TicketStore`.
 
+use std::{ops::Index, process::id};
+
 use ticket_fields::{TicketDescription, TicketTitle};
 
 #[derive(Clone)]
@@ -10,6 +12,18 @@ pub struct TicketStore {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TicketId(u64);
+
+// impl From<u64> for TicketId {
+//     fn from(value: u64) -> Self {
+//         return TicketId(value);
+//     }
+// }
+
+impl Into<u64> for TicketId {
+    fn into(self) -> u64 {
+        return self.0;
+    }
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Ticket {
@@ -55,6 +69,49 @@ impl TicketStore {
 
     pub fn get(&self, id: TicketId) -> Option<&Ticket> {
         self.tickets.iter().find(|&t| t.id == id)
+    }
+}
+
+// my impls
+// impl Index<TicketId> for TicketStore {
+//     type Output = Ticket;
+//     fn index(&self, index: TicketId) -> &Self::Output {
+//         let tickets = self.tickets.iter().collect::<Vec<&Ticket>>();
+//         let idx: u64 = index.into();
+//         let ticket = tickets[idx as usize];
+//         return ticket;
+//     }
+// }
+
+// impl Index<&TicketId> for TicketStore {
+//     type Output = Ticket;
+//     fn index(&self, index: &TicketId) -> &Self::Output {
+//         let idx: u64 = (*index).into();
+//         let ticket = self.tickets.iter().collect::<Vec<&Ticket>>()[idx as usize];
+//         return ticket;
+//     }
+// }
+
+// Recommend impls
+
+impl Index<TicketId> for TicketStore {
+    type Output = Ticket;
+    fn index(&self, index: TicketId) -> &Self::Output {
+        let ticket = self.tickets.iter().find(|&t| t.id == index).unwrap();
+        return ticket;
+    }
+}
+
+impl Index<&TicketId> for TicketStore {
+    type Output = Ticket;
+    fn index(&self, index: &TicketId) -> &Self::Output {
+        // 下面两行代码无法编译成功的原因是：ticket 是一个局部变量（栈空间）（这会返回 TicketsStore 中 Vec<Ticket> 的一个 ticket 拷贝）
+        // 当 index 方法执行完毕以后 ticket 变量将会回收
+        // 返回的一个 &ticket 引用会变成 dangling reference
+        // 当你在 self[*index] 前面加上 & 符号时，你不会获取 Ticket 的拷贝，而是获取指向 self[*index] 这个 Ticket 的引用。
+        // let ticket = self[*index];
+        // return &ticket;
+        return &self[*index];
     }
 }
 

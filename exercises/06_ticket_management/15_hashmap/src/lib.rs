@@ -2,6 +2,7 @@
 //  Implement additional traits on `TicketId` if needed.
 
 use std::collections::HashMap;
+use std::hash::Hash;
 use std::ops::{Index, IndexMut};
 use ticket_fields::{TicketDescription, TicketTitle};
 
@@ -11,9 +12,12 @@ pub struct TicketStore {
     counter: u64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
 pub struct TicketId(u64);
 
+// impl Eq for TicketId {
+
+// }
 #[derive(Clone, Debug, PartialEq)]
 pub struct Ticket {
     pub id: TicketId,
@@ -38,7 +42,7 @@ pub enum Status {
 impl TicketStore {
     pub fn new() -> Self {
         Self {
-            tickets: todo!(),
+            tickets: HashMap::new(),
             counter: 0,
         }
     }
@@ -52,16 +56,27 @@ impl TicketStore {
             description: ticket.description,
             status: Status::ToDo,
         };
-        todo!();
+        // todo!();
+        self.tickets.insert(id, ticket);
         id
     }
 
     pub fn get(&self, id: TicketId) -> Option<&Ticket> {
-        todo!()
+        // my impl
+        // let ticket = self.tickets.iter().find(|&t| *t.0 == id).unwrap();
+        // return Some(ticket.1);
+
+        // Recommend impl
+        self.tickets.get(&id)
     }
 
     pub fn get_mut(&mut self, id: TicketId) -> Option<&mut Ticket> {
-        todo!()
+        // my impl
+        // let find = self.tickets.iter_mut().find(|t| *t.0 == id).unwrap();
+        // return Some(find.1);
+
+        // Recommend impl
+        self.tickets.get_mut(&id)
     }
 }
 

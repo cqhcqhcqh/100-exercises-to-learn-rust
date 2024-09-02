@@ -1,6 +1,34 @@
 // TODO: Define a function named `sum` that takes a reference to a slice of `u32` and returns the sum of all
 //  elements in the slice.
 
+// my solutions
+// pub fn sum(s: &[i32]) -> i32 {
+//     let mut r: i32 = 0;
+//     for i in s.iter() {
+//         r = r + *i;
+//     }
+//     return r;
+// }
+
+// better solutions
+pub fn sum(slice: &[u32]) -> u32 {
+    slice.iter().sum()
+}
+
+// support generic
+// use std::ops::Add;
+
+// pub fn sum<T>(s: &[T]) -> T
+// where
+//     T: Add<Output = T> + Default + Copy,
+// {
+//     let mut r: T = T::default(); // 使用 Default trait 来初始化 r
+//     for &i in s.iter() {
+//         r = r + i; // 加法运算
+//     }
+//     return r;
+// }
+
 #[cfg(test)]
 mod tests {
     use super::*;
