@@ -1,4 +1,8 @@
+use std::os::macos::raw::stat;
+use std::path;
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
+
+use ticket_fields::test_helpers::ticket_title;
 
 // TODO: Implement the patching functionality.
 use crate::data::{Ticket, TicketDraft, TicketPatch};
@@ -35,7 +39,13 @@ impl TicketStoreClient {
         Ok(response_receiver.recv().unwrap())
     }
 
-    pub fn update(&self, ticket_patch: TicketPatch) -> Result<(), OverloadedError> {}
+    pub fn update(&self, ticket_patch: TicketPatch) -> Result<(), OverloadedError> {
+        let (response_sender, response_receiver) = sync_channel(1);
+        self.sender
+            .try_send(Command::Update { patch: ticket_patch, response_channel: response_sender })
+            .map_err(|_| OverloadedError)?;
+        return Ok(response_receiver.recv().unwrap());
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -85,7 +95,29 @@ pub fn server(receiver: Receiver<Command>) {
                 patch,
                 response_channel,
             }) => {
-                todo!()
+                // todo!()
+                let ticket = store.get_mut(patch.id);
+                match ticket {
+                    Some(ticket) => {
+                        // MY IMPL
+                        // ticket.title = patch.title.unwrap();
+                        // ticket.status = patch.status.unwrap();
+                        // ticket.description = patch.description.unwrap();
+                        if let Some(title) = patch.title {
+                            ticket.title = title;
+                        }
+                        if let Some(status) = patch.status {
+                            ticket.status = status;
+                        }
+                        if let Some(description) = patch.description {
+                            ticket.description = description;
+                        }
+                    },
+                    None => {
+
+                    }
+                }
+                let _= response_channel.send(());
             }
             Err(_) => {
                 // There are no more senders, so we can safely break

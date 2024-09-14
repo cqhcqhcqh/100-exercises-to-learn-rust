@@ -1,5 +1,7 @@
 use crate::data::{Ticket, TicketDraft};
 use crate::store::{TicketId, TicketStore};
+use std::cell::RefCell;
+use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
 
 pub mod data;
@@ -7,25 +9,57 @@ pub mod store;
 
 #[derive(Clone)]
 // TODO: flesh out the client implementation.
-pub struct TicketStoreClient {}
+
+// MY IMPL
+// pub struct TicketStoreClient {
+//     store: RefCell<TicketStore>
+// }
+
+// impl TicketStoreClient {
+//     // Feel free to panic on all errors, for simplicity.
+//     pub fn insert(&self, draft: TicketDraft) -> TicketId {
+//         let ticket_id = self.store.borrow_mut().add_ticket(draft);
+//         return ticket_id;
+//     }
+
+//     pub fn get(&self, id: TicketId) -> Option<Ticket> {
+//         return self.store.borrow().get(id).cloned();
+//     }
+// }
+
+// pub fn launch() -> TicketStoreClient {
+//     let (sender, receiver) = std::sync::mpsc::channel();
+//     std::thread::spawn(move || server(receiver));
+//     // todo!()
+//     let store = TicketStore::new();
+//     return TicketStoreClient{ store: RefCell::new(store)};
+// }
+
+// Solution IMPL
+
+pub struct TicketStoreClient {
+    sender: Sender<Command>
+}
 
 impl TicketStoreClient {
-    // Feel free to panic on all errors, for simplicity.
     pub fn insert(&self, draft: TicketDraft) -> TicketId {
-        todo!()
+        let (response_sender, response_receiver) = std::sync::mpsc::channel();
+        self.sender.send(Command::Insert { draft: draft, response_channel: response_sender }).unwrap();
+        response_receiver.recv().unwrap()
     }
 
     pub fn get(&self, id: TicketId) -> Option<Ticket> {
-        todo!()
+        let (response_sender, response_receiver) = std::sync::mpsc::channel();
+        self.sender.send(Command::Get { id: id, response_channel: response_sender }).unwrap();
+        return response_receiver.recv().unwrap();
     }
 }
 
 pub fn launch() -> TicketStoreClient {
     let (sender, receiver) = std::sync::mpsc::channel();
     std::thread::spawn(move || server(receiver));
-    todo!()
+    return  TicketStoreClient {sender};
 }
-
 // No longer public! This becomes an internal detail of the library now.
 enum Command {
     Insert {

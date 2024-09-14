@@ -14,10 +14,38 @@
 // this is necessary in the next exercise.
 use std::thread;
 
+// My IMPL
 pub fn sum(v: Vec<i32>) -> i32 {
-    todo!()
+    // todo!()
+    // let v: Vec<i32> = v.clone();
+    let v: &'static Vec<i32> = Box::leak(Box::new(v.clone()));
+    let v_len = v.len();
+    let half_v: &[i32] = &v[0..v_len/2];
+    let next_half_v = &v[v_len/2..];
+
+    let halfHandler = thread::spawn(|| {
+        let half_total: i32 = half_v.iter().sum();
+        return half_total;
+    });
+
+    let nextHalfHandler = thread::spawn(|| {
+        let half_total: i32 = next_half_v.iter().sum();
+        return half_total;
+    });
+
+    return halfHandler.join().unwrap() + nextHalfHandler.join().unwrap();
 }
 
+// Solution IMPL
+// pub fn sum1(v: Vec<i32>) -> i32 {
+//     let v_len = v.len();
+//     let (v1, v2) = v.split_at(v_len/2);
+//     let v1 = v1.into_iter();
+//     let v2 = v2.into_iter();
+//     let handle1 = thread::spawn(move || { v1.into_iter().sum::<i32>()});
+//     let handle2 = thread::spawn(move || { v2.into_iter().sum::<i32>()});
+//     return handle1.join().unwrap() + handle2.join().unwrap();
+// }
 #[cfg(test)]
 mod tests {
     use super::*;
